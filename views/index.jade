@@ -1,0 +1,71 @@
+//- index.jade
+extends ./layout.jade
+
+block row-content
+  div.container
+    div#score.row(style='height:220px;width:500px;')
+    div.row#input_div
+      div.col-lg-12.col-md-12.col-sm-12.col-xs-12
+        h2 Input Text
+        div.row
+        form.form-horizontal(method='post')
+         div
+           input#input-restaurant-reviews.base--radio.input--radio(role='radio', type='radio', name='rb', value='restaurant-reviews', checked='true')
+           label.base--inline-label.input--radio-label(for='input-restaurant-reviews') Restaurant Reviews from Yelp
+           input#input-product-reviews.base--radio.input--radio(role='radio', type='radio', name='rb', value='product-reviews')
+           label.base--inline-label.input--radio-label(for='input-product-reviews') Tech Product Reviews from CNET
+
+          div.well
+            fieldset
+              div.form-group
+                div
+                  textarea#textArea.form-control(name="content", rows='11', 
+                    placeholder="Enter the text that you want to analyze. You can include multiple samples of text by entering each one on a new line. ...", required="true") 
+                  
+            div.form-group.row(style='margin-bottom: 0px; padding-top: 5px;')
+              div.col-lg-2.col-md-2.col-sm-4.col-xs-12
+                a.btn-secondary.btn-block.analyze-btn(role="button", ) Analyze
+              
+    //- results section
+    div#results_description.row(style='display:none;')
+      div.col-lg-12.col-md-12.col-sm-12.col-xs-12
+        h2.output-div Average emotional level through the conversation
+        div.row
+          p.help-block
+            | The graph below shows the average level of your emotions for each line of conversation you had with the Regina chat bot. Hover over the waves for more details.
+
+
+    div.row#loading(style="display:none;")
+      div.loader
+        img(src="images/loading-indicator.gif")
+    div.row.error(style='display: none;')
+      div.col-lg-12.col-md-12.col-sm-12.col-xs-12.well
+        p.errorMsg
+
+    div#results_row.row   
+      div#emotion_rslts(style='display:none;').col-lg-12.col-md-12.col-sm-12.col-xs-12.well
+        div.form-group.row
+          div.col-lg-12.col-md-12.col-sm-12.col-xs-12
+            div#emotion_overview
+              div.col-lg-12.col-md-12.col-sm-12.col-xs-12
+                div.panel.panel-default
+                  //div.panel-heading
+                    //p Emotion Overview
+                  div.panel-body
+                    div#emotion_timeline
+                    div#page_selection.col-lg-6.col-lg-offset-4.col-md-6.col-md-offset-4
+            div#emotion_details
+                  //div.col-lg-5.col-md-5.col-sm-5
+                  //  div.panel.panel-default
+                  //    div.panel-body#emotion_words(style="padding:0px;")
+                  //div.col-lg-7.col-md-7.col-sm-7
+              div.col-lg-12.col-md-12.col-sm-12.col-xs-12
+                div#emotion_text.panel.panel-default
+                  div.panel-body(style="padding:0px;")
+        div.form-group.row(style='margin-bottom: 0px; padding-top: 5px;')
+            div.col-lg-4.col-lg-push-8.col-md-4.col-md-push-8.col-sm-4.col-sm-push-8.col-xs-12
+              
+              a#start_over Start Over
+              
+              
+    div#tooltip.well      
