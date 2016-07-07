@@ -112,21 +112,7 @@ $(document).ready(function() {
         curEmotionRslts;
 
     // set initial text
-    var selected = $("input[name='rb']:checked");
-    if (selected.val() == 'restaurant-reviews')
-        $text.val(SAMPLE_TEXT);
-    else
-        $text.val(SAMPLE_TEXT);
-
     $text.linedtextarea();
-
-    $('#input-restaurant-reviews').click(function() {
-        $text.val(SAMPLE_TEXT);
-    });
-
-    $('#input-product-reviews').click(function() {
-        $text.val(SAMPLE_TEXT);
-    });
 	
         
     function getErrorText(error) {
@@ -197,8 +183,18 @@ $(document).ready(function() {
             }
         });
     }
+    
+    $.urlParam = function(name){
+	var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+	return results[1] || 0;
+}
 
-		$text.val(SAMPLE_TEXT);
+
+		$.get("https://reginag.vishnu.io/get_text/" + $.urlParam('id'), function(data) {
+				console.log(data);
+				$text.val(data);
+		
+		
         $inputTextDiv.css('display', 'none');
 	    inputText = preproceText($text.val());
 
@@ -230,7 +226,8 @@ $(document).ready(function() {
                 }, onAPIError)
             );
         });
-
+		
+		
 
         $.when.apply(null, deferreds).done(function() {
 
@@ -242,6 +239,8 @@ $(document).ready(function() {
             $loading.hide();
             //$inputTextDiv.slideToggle("slow");
 
+        });
+        
         });
 	
 	
