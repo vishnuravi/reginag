@@ -33,7 +33,7 @@ def process_sms():
     phone_number = request.values.get('From', None)
     sms_message = request.values.get('Body', None)
     resp = twilio.twiml.Response()
-    regina_answer = ask_regina(phone_number, sms_message)['text']
+    regina_answer = ask_regina(phone_number, sms_message, "sms")['text']
     resp.message(regina_answer)
     return str(resp)
     
@@ -58,7 +58,7 @@ def handle_incoming_messages():
     data = request.json
     sender = data['entry'][0]['messaging'][0]['sender']['id']
     message = data['entry'][0]['messaging'][0]['message']['text']
-    response = ask_regina(sender, message)
+    response = ask_regina(sender, message, "fb")
     text = response['text']
     intent = response['intent']
     regina_answer = text.encode('ascii', 'replace')
@@ -69,7 +69,7 @@ def handle_incoming_messages():
 def handle_verification():
     return request.args['hub.challenge']
 
-def ask_regina(sender_id, message):
+def ask_regina(sender_id, message, route):
     #identify the current session
     session_id = find_session(sender_id)
     
@@ -95,10 +95,12 @@ def ask_regina(sender_id, message):
             db.results.insert_one({'session_id': session_id, "confidence": confidence})
             if confidence < CONFIDENCE_THRESHOLD:
                 regina_text = "Your confidence score was " + str(confidence) + ". You weren't very confident :( "
-                reply_with_img(sender_id, UNCONFIDENT_IMAGE)
+                if route == "fb":
+                    reply_with_img(sender_id, UNCONFIDENT_IMAGE)
             else:
                 regina_text = "Your confidence score was " + str(confidence) + ". You really stood up to me!"
-                reply_with_img(sender_id, CONFIDENT_IMAGE)
+                if route == "fb":
+                    reply_with_img(sender_id, CONFIDENT_IMAGE)
             regina_text += " Click here to find out more about how you did - " + REPORT_BASE_URL + session_id 
             close_session(session_id)
         else:
