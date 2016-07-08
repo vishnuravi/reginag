@@ -57,11 +57,19 @@ def reply_with_img(user_id, img_url):
 def handle_incoming_messages():
     data = request.json
     sender = data['entry'][0]['messaging'][0]['sender']['id']
-    message = data['entry'][0]['messaging'][0]['message']['text']
+    
+    try:
+        message = data['entry'][0]['messaging'][0]['message']['text']
+    except Exception, e:
+        message = "Exception: no text sent"
+    
     response = ask_regina(sender, message, "fb")
     regina_answer = response['text']
     intent = response['intent']
-    reply(sender, regina_answer)
+    if '.gif' in regina_answer:
+        reply_with_img(sender, regina_answer)
+    else:
+        reply(sender, regina_answer)
     return regina_answer
 
 @app.route('/fb', methods=['GET'])
