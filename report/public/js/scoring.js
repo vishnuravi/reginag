@@ -1,5 +1,13 @@
-var score = FINAL_SCORE;
-var data = function(score)
+$.urlParam = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    return results[1] || 0;
+}
+
+$.get("https://reginag.vishnu.io/get_score/" + $.urlParam('id'), function(response) {
+
+var score = response;
+
+var data = function(data)
 {
   var bar_color;
 if(score<5)
@@ -31,7 +39,9 @@ var data = [{
 
 var layout = {
   xaxis: {range: [0, 10]},
-  title:"Score of Conversation"
+  title:"Confidence Level"
 
 };
-Plotly.newPlot('score', data(score),layout);
+Plotly.newPlot('score', data(score),layout); 
+
+});

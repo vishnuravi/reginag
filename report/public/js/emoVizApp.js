@@ -184,14 +184,13 @@ $(document).ready(function() {
         });
     }
     
-    $.urlParam = function(name){
-	var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-	return results[1] || 0;
-}
+    	$.urlParam = function(name){
+			var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+			return results[1] || 0;
+		}
 
 
 		$.get("https://reginag.vishnu.io/get_text/" + $.urlParam('id'), function(data) {
-				console.log(data);
 				$text.val(data);
 		
 		

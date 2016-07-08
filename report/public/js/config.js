@@ -18,11 +18,3 @@
 
 
 var EMOTION_API_URL = "/api/v1/analyze";
-
-//var SESSION_ID = getParameterByName('id');
-
-//var SAMPLE_TEXT = $.get("https://reginag.vishnu.io/get_text/" + SESSION_ID).responseText;
-
-//console.log(SAMPLE_TEXT);
-
-var FINAL_SCORE = 5.6;

@@ -21,6 +21,11 @@ def hello():
 @app.route("/get_text/<id>")
 def get_text(id):
    return concatenate_session(id)
+   
+@app.route("/get_score/<id>")
+def get_score(id):
+	score = db.results.find_one({"session_id": id})
+	return str(score['confidence'])
 
 @app.route("/sms", methods=['GET', 'POST'])
 def process_sms():
@@ -87,8 +92,9 @@ def ask_regina(sender_id, message):
         conversation = concatenate_session(session_id)
         if conversation != "":
             confidence = analyze_tone(conversation)
+            db.results.insert_one({'session_id': session_id, "confidence": confidence})
             if confidence < CONFIDENCE_THRESHOLD:
-                regina_text = "Your confidence score was " + str(confidence) + " You weren't very confident :( "
+                regina_text = "Your confidence score was " + str(confidence) + ". You weren't very confident :( "
                 reply_with_img(sender_id, UNCONFIDENT_IMAGE)
             else:
                 regina_text = "Your confidence score was " + str(confidence) + ". You really stood up to me!"
