@@ -32,7 +32,6 @@ def process_sms():
     resp.message(regina_answer)
     return str(resp)
     
-    
 def reply(user_id, msg):
     data = {
         "recipient": {"id": user_id},
@@ -40,8 +39,15 @@ def reply(user_id, msg):
     }
     resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + FB_PAGE_ACCESS_TOKEN, json=data)
     print(resp.content)
- 
- 
+
+def reply_with_img(user_id, img_url):
+    data = {
+        "recipient": {"id": user_id},
+        "message": {"attachment":{ "type":"image", "payload": {"url": img_url} } }
+    }
+    resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + FB_PAGE_ACCESS_TOKEN, json=data)
+    print(resp.content)
+
 @app.route('/fb', methods=['POST'])
 def handle_incoming_messages():
     data = request.json
@@ -52,8 +58,7 @@ def handle_incoming_messages():
     intent = response['intent']
     regina_answer = text.encode('ascii', 'replace')
     reply(sender, regina_answer)
- 
-    return "ok"
+    return regina_answer
 
 @app.route('/fb', methods=['GET'])
 def handle_verification():
@@ -80,9 +85,18 @@ def ask_regina(sender_id, message):
     #if Bye intent, analyze tone and close session
     if regina_intent == "Bye":
         conversation = concatenate_session(session_id)
-        confidence = analyze_tone(conversation)
-        regina_text = "Thanks for playing! Click the link to see how you did. http://reginag.vishnu.io:3000/?id=" + session_id 
-        close_session(session_id)
+        if conversation != "":
+            confidence = analyze_tone(conversation)
+            if confidence < CONFIDENCE_THRESHOLD:
+                regina_text = "Your confidence score was " + str(confidence) + " You weren't very confident :( "
+                reply_with_img(sender_id, UNCONFIDENT_IMAGE)
+            else:
+                regina_text = "Your confidence score was " + str(confidence) + ". You really stood up to me!"
+                reply_with_img(sender_id, CONFIDENT_IMAGE)
+            regina_text += " Click here to find out more about how you did - " + REPORT_BASE_URL + session_id 
+            close_session(session_id)
+        else:
+            regina_text = "Bye!"
     else:
         #log message and response to db
         db.messages.insert_one({'createdAt': datetime.datetime.utcnow(), 'sender_id': sender_id, 'session_id': session_id, 'message': message, 'response': regina_text})
