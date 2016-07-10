@@ -5,7 +5,7 @@ $.urlParam = function(name){
 
 $.get("https://reginag.vishnu.io/get_score/" + $.urlParam('id'), function(response) {
 
-var score = response;
+var score = response*10;
 
 var data = function(data)
 {

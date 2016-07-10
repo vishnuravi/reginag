@@ -53,6 +53,12 @@ def reply_with_img(user_id, img_url):
     resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + FB_PAGE_ACCESS_TOKEN, json=data)
     print(resp.content)
 
+def reply_with_button(user_id, button_title, url):
+    data = {
+	    "recipient": {"id": user_id},
+	    "message": { "attachment": { "type": "template", "payload": {"template_type": "button", "text": text, "buttons": [{"type": "web_url", "url": url, "title": button_title}]}}}
+	}
+
 @app.route('/fb', methods=['POST'])
 def handle_incoming_messages():
     data = request.json
@@ -100,6 +106,9 @@ def ask_regina(sender_id, message, route):
         if conversation != "":
             confidence = analyze_tone(conversation)
             db.results.insert_one({'session_id': session_id, "confidence": confidence})
+            
+            
+            #send back the confidence score and interpretation, adding GIFs for facebook
             if confidence < CONFIDENCE_THRESHOLD:
                 regina_text = "Your confidence score was " + str(confidence) + ". You weren't very confident :( "
                 if route == "fb":
@@ -108,6 +117,7 @@ def ask_regina(sender_id, message, route):
                 regina_text = "Your confidence score was " + str(confidence) + ". You really stood up to me!"
                 if route == "fb":
                     reply_with_img(sender_id, CONFIDENT_IMAGE)
+            
             regina_text += " Click here to find out more about how you did - " + REPORT_BASE_URL + session_id 
             close_session(session_id)
         else:
